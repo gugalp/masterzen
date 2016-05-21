@@ -146,7 +146,13 @@ Game.prototype.guessCode = function(playerName, sequence)
 
 Game.prototype.stats = function()
 {
+    var ret = true;
+    this.players.forEach(function(player)
+    {
+        ret = ret && !player.turn;
+    });
 
+    return ret;
 }
 
 Game.prototype.getPlayer = function(playerName)

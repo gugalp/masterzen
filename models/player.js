@@ -9,3 +9,5 @@ Player.prototype.guess = function(sequence) {
 
     this.guesses.push(guess);
 };
+
+module.exports = Player;

@@ -5,3 +5,4 @@ function Guess(sequence, exact, near) {
     this.timestamp = Date.now();
 };
 
+module.exports = Guess;

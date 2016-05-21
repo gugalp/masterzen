@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Mastermind challenge",
   "dependencies": {
+    "node-uuid": "^1.4.7",
     "redis": "^2.6.0-2"
   },
   "main": "index.js",

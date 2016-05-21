@@ -44,13 +44,14 @@ router.post('/Guess', function(request, response) {
         Game.methods.load(request.body.gameId, function(err, game) {
             try
             {
-                if (game.config.multiplayer === true && request.body.playerName == undefined)
+                var playerName = request.body.playerName;
+                if (game.config.multiplayer === true && playerName == undefined)
                 {
                     response.send(400);
                     return;
                 }
                 
-                var player = ((playerName && this.getPlayer(playerName)) || this.players[0]);
+                var player = ((playerName && game.getPlayer(playerName)) || game.players[0]);
 
                 if (player.turn) {
                     game.guessCode(request.body.guess, player);

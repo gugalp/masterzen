@@ -101,6 +101,11 @@ Game.prototype.init = function(playerName)
 
     this.gameId = uuid.v1();
     this.sequence = makeSequence(this.config.colors.join(""), this.config.codeLength);
+
+    if (!this.config.multiplayer)
+    {
+        this.startTurn();
+    }
 };
 
 Game.prototype.startTurn = function()
@@ -115,30 +120,41 @@ Game.prototype.startTurn = function()
 
 Game.prototype.guessCode = function(sequence, player)
 {
-    var exactCount = 0;
-    var nearCount = 0;
-    var nearIndexes = [];
-    for (var i = 0; i < sequence.length; i++) {
-        var guessChar = sequence.charAt(i);
+    if (player.guesses.length < this.config.maxAttempts) {
+        var exactCount = 0;
+        var nearCount = 0;
+        var nearIndexes = [];
+        for (var i = 0; i < sequence.length; i++) {
+            var guessChar = sequence.charAt(i);
 
-        var sequenceChar = this.sequence.charAt(i);
+            var sequenceChar = this.sequence.charAt(i);
 
-        if (guessChar == sequenceChar) {
-            nearIndexes.push(i);
-            exactCount++;
-        }
-        else {
-            if (checkNear(nearIndexes, guessChar, this.sequence, 0)) {
-                nearCount++;
+            if (guessChar == sequenceChar) {
+                nearIndexes.push(i);
+                exactCount++;
+            }
+            else {
+                if (checkNear(nearIndexes, guessChar, this.sequence, 0)) {
+                    nearCount++;
+                }
             }
         }
+
+        this.solved = exactCount == this.sequence.length;
+
+
+        player.addGuess(sequence, exactCount, nearCount);
+        player.turn = false;
+
+        if (this.stats())
+        {
+            this.startTurn();
+        }
     }
-
-    this.solved = exactCount == this.sequence.length;
-
-
-    player.addGuess(sequence, exactCount, nearCount);
-    player.turn = false;
+    else
+    {
+        throw new Error("Maximum number of attempts exceeded!");
+    }
 };
 
 Game.prototype.stats = function()
@@ -174,6 +190,8 @@ Game.prototype.getPlayer = function(playerName)
 Game.prototype.addPlayer = function(playerName)
 {
     this.players.push(new Player(playerName));
+
+    this.startTurn();
 };
 
 Game.methods = {

@@ -4,6 +4,7 @@
   "description": "Mastermind challenge",
   "dependencies": {
     "body-parser": "^1.15.1",
+    "express": "^4.13.4",
     "node-uuid": "^1.4.7",
     "redis": "^2.6.0-2"
   },

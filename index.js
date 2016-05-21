@@ -1,4 +1,4 @@
-var express = require('express');
+/*var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 
@@ -29,23 +29,23 @@ router.post('/Guess', function(request, response) {
 
 app.use('/API', router);
 
-app.listen(8080);
+app.listen(8080);*/
 
 
-/*
 var Game = require("./models/game");
 
 var game = new Game();
-game.gameId = "testeGame";
-game.sequence = "ABCD";
-Game.methods.save(game);
+game.init("TestPlayer")
+game.addPlayer("TestPlayer2");
+game.startTurn();
+game.guessCode("TestPlayer", "RRGYYG");
 
+Game.methods.save(game);
 Game.methods.load(
-    "testeGame",
+    game.gameId,
     function(err, ret)
     {
         console.log(err);
         console.log(JSON.stringify(ret));
     }
 );
-*/

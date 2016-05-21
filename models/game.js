@@ -24,7 +24,7 @@ Game.methods = {
     {
         initClient();
         var gameHash = "game:" + game.gameId;
-        client.set(gameHash, game, redis.print);
+        client.set(gameHash, JSON.stringify(game), redis.print);
         client.quit();
 
     },
@@ -32,14 +32,15 @@ Game.methods = {
     load: function(gameId, callback)
     {
         initClient();
-        var gameHash = "game:" + game.gameId;
-        client.keys(gameHash, function(err, replies)
+        var gameHash = "game:" + gameId;
+
+        client.get(gameHash, function(err, reply)
             {
                 var game;
 
-                if (replies.length == 1)
+                if (reply)
                 {
-                    game = replies[0];
+                    game = JSON.parse(reply);
                 }
                 else
                 {

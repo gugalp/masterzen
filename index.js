@@ -3,6 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 
 var Game = require("./models/game");
+var Config = require("./models/config");
 
 var router = express.Router();
 

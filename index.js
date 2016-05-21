@@ -44,6 +44,9 @@ router.post('/Guess', function(request, response) {
         Game.methods.load(request.body.gameId, function(err, game) {
             try
             {
+                if (err) {
+                    throw err;
+                }
                 var playerName = request.body.playerName;
                 if (game.config.multiplayer === true && playerName == undefined)
                 {
@@ -76,6 +79,25 @@ router.post('/Guess', function(request, response) {
                     }
                 );
             }
+        });
+    }
+});
+
+router.post('/Stats', function(request, response) {
+    if (request.body.gameId == undefined || request.body.playerName == undefined) {
+        response.send(400);
+    } else {
+        Game.methods.load(request.body.gameId, function(err, game) {
+            var player = game.getPlayer(request.body.playerName);
+
+            var out = JSON.parse(JSON.stringify(game));
+            delete out.players;
+            delete out.sequence;
+
+            out.pastGuesses = player.guesses;
+            out.numGuesses = player.guesses.length;
+
+            response.send(out);
         });
     }
 });

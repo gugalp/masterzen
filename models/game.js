@@ -42,7 +42,7 @@ if (![].contains) {
 
 function initClient()
 {
-    client = redis.createClient();
+    client = redis.createClient('//test:test@pub-redis-17878.us-east-1-4.2.ec2.garantiadata.com:17878');
 
     client.on("error", function (err) {
         console.log("Error " + err);

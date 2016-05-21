@@ -17,9 +17,9 @@ router.post('/NewGame', function(request, response) {
     } else {
         console.log(request.body);
 
-        var config;
-        if (request.body.config == undefined) {
-
+        var config = request.body.config;
+        if (config != undefined) {
+            config = new Config(config.colors, config.codeLength, config.maxAttempts, config.multiplayer);
         }
 
         var game = new Game(config);

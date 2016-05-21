@@ -49,10 +49,14 @@ router.post('/Guess', function(request, response) {
                     response.send(400);
                     return;
                 }
+                
+                var player = ((playerName && this.getPlayer(playerName)) || this.players[0]);
 
-                game.guessCode(request.body.guess, request.body.playerName);
+                if (player.turn) {
+                    game.guessCode(request.body.guess, player);
 
-                Game.methods.save(game);
+                    Game.methods.save(game);
+                }
                 console.log(JSON.stringify(game));
 
                 response.json(

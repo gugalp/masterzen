@@ -113,37 +113,32 @@ Game.prototype.startTurn = function()
     );
 };
 
-Game.prototype.guessCode = function(sequence, playerName)
+Game.prototype.guessCode = function(sequence, player)
 {
-    var player = (playerName && this.getPlayer(playerName)) || this.players[0];
+    var exactCount = 0;
+    var nearCount = 0;
+    var nearIndexes = [];
+    for (var i = 0; i < sequence.length; i++) {
+        var guessChar = sequence.charAt(i);
 
-    if (player.turn)
-    {
-        var exactCount = 0;
-        var nearCount = 0;
-        var nearIndexes = [];
-        for (var i = 0; i < sequence.length; i++) {
-            var guessChar = sequence.charAt(i);
+        var sequenceChar = this.sequence.charAt(i);
 
-            var sequenceChar = this.sequence.charAt(i);
-
-            if (guessChar == sequenceChar) {
-                nearIndexes.push(i);
-                exactCount++;
-            }
-            else {
-                if (checkNear(nearIndexes, guessChar, this.sequence, 0)) {
-                    nearCount++;
-                }
+        if (guessChar == sequenceChar) {
+            nearIndexes.push(i);
+            exactCount++;
+        }
+        else {
+            if (checkNear(nearIndexes, guessChar, this.sequence, 0)) {
+                nearCount++;
             }
         }
-
-        this.solved = exactCount == this.sequence.length;
-
-
-        player.addGuess(sequence, exactCount, nearCount);
-        player.turn = false;
     }
+
+    this.solved = exactCount == this.sequence.length;
+
+
+    player.addGuess(sequence, exactCount, nearCount);
+    player.turn = false;
 };
 
 Game.prototype.stats = function()

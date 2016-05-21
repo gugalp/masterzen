@@ -1,6 +1,8 @@
-/*var express = require('express');
+var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+
+var Game = require("./models/game");
 
 var router = express.Router();
 
@@ -15,24 +17,64 @@ router.post('/NewGame', function(request, response) {
     } else {
         console.log(request.body);
 
+        var config;
+        if (request.body.config == undefined) {
+
+        }
+
+        var game = new Game(config);
+        game.init(request.body.name);
+
+        Game.methods.save(game);
+
+        console.log(game);
+
         response.json({
-            'teste': 123
+            'gameId': game.gameId,
+            'config': game.config
         });
     }
 });
 
 
 router.post('/Guess', function(request, response) {
-    
+    if (request.body.gameId == undefined || request.body.guess == undefined) {
+        response.send(400);
+    } else {
+        Game.methods.load(request.gameId, function(game) {
+            try
+            {
+                if (game.config.multiplayer === true) {
+                    if (request.body.playerName == undefined)
+                    {
+                        response.send(400);
+                    } else
+                    {
+                        game.guessCode(request.body.guess, request.body.playerName);
+                    }
+                } else {
+                    game.guessCode(request.body.guess);
+                }
+            }
+            catch(e)
+            {
+                response.json(
+                    {
+                        "status": false,
+                        "msg": e.message
+                    }
+                );
+            }
+        });
+    }
 });
 
 
 app.use('/API', router);
 
-app.listen(8080);*/
+app.listen(8080);
+/*
 
-
-var Game = require("./models/game");
 
 var game = new Game();
 game.init("TestPlayer")
@@ -49,3 +91,4 @@ Game.methods.load(
         console.log(JSON.stringify(ret));
     }
 );
+*/

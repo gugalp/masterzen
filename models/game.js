@@ -113,7 +113,7 @@ Game.prototype.startTurn = function()
     );
 }
 
-Game.prototype.guessCode = function(playerName, sequence)
+Game.prototype.guessCode = function(sequence, playerName)
 {
     var exactCount = 0;
     var nearCount = 0;
@@ -139,7 +139,8 @@ Game.prototype.guessCode = function(playerName, sequence)
 
     this.solved = exactCount == this.sequence.length;
 
-    var player = this.getPlayer(playerName);
+
+    var player = (playerName && this.getPlayer(playerName)) || this.players[0];
     player.addGuess(sequence, exactCount, nearCount);
     player.turn = false;
 }
@@ -159,6 +160,11 @@ Game.prototype.getPlayer = function(playerName)
             ret = player;
         }
     });
+
+    if (!ret)
+    {
+        throw new Error("User not found");
+    }
 
     return ret;
 }

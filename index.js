@@ -41,20 +41,26 @@ router.post('/Guess', function(request, response) {
     if (request.body.gameId == undefined || request.body.guess == undefined) {
         response.send(400);
     } else {
-        Game.methods.load(request.gameId, function(game) {
+        Game.methods.load(request.body.gameId, function(err, game) {
             try
             {
-                if (game.config.multiplayer === true) {
-                    if (request.body.playerName == undefined)
-                    {
-                        response.send(400);
-                    } else
-                    {
-                        game.guessCode(request.body.guess, request.body.playerName);
-                    }
-                } else {
-                    game.guessCode(request.body.guess);
+                if (game.config.multiplayer === true && request.body.playerName == undefined)
+                {
+                    response.send(400);
+                    return;
                 }
+
+                game.guessCode(request.body.guess, request.body.playerName);
+
+                Game.methods.save(game);
+                console.log(JSON.stringify(game));
+
+                response.json(
+                    {
+                        "status": true,
+                        "msg": "Check stats for playing again!"
+                    }
+                );
             }
             catch(e)
             {

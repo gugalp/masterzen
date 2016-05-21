@@ -47,7 +47,7 @@ function initClient()
     client.on("error", function (err) {
         console.log("Error " + err);
     });
-}
+};
 
 function makeSequence(possible, length)
 {
@@ -58,7 +58,7 @@ function makeSequence(possible, length)
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
-}
+};
 
 function checkNear(nearIndexes, guessChar, sequence, startPosition)
 {
@@ -84,7 +84,7 @@ function checkNear(nearIndexes, guessChar, sequence, startPosition)
     {
         return false;
     }
-}
+};
 
 function Game(config) {
     this.gameId = "";
@@ -111,39 +111,40 @@ Game.prototype.startTurn = function()
             player.turn = true;
         }
     );
-}
+};
 
 Game.prototype.guessCode = function(sequence, playerName)
 {
-    var exactCount = 0;
-    var nearCount = 0;
-    var nearIndexes = [];
-    for (var i = 0; i < sequence.length; i++)
+    var player = (playerName && this.getPlayer(playerName)) || this.players[0];
+
+    if (player.turn)
     {
-        var guessChar = sequence.charAt(i);
+        var exactCount = 0;
+        var nearCount = 0;
+        var nearIndexes = [];
+        for (var i = 0; i < sequence.length; i++) {
+            var guessChar = sequence.charAt(i);
 
-        var sequenceChar = this.sequence.charAt(i);
+            var sequenceChar = this.sequence.charAt(i);
 
-        if (guessChar == sequenceChar)
-        {
-            exactCount++;
-        }
-        else
-        {
-            if (checkNear(nearIndexes, guessChar, this.sequence, 0))
-            {
-                nearCount++;
+            if (guessChar == sequenceChar) {
+                nearIndexes.push(i);
+                exactCount++;
+            }
+            else {
+                if (checkNear(nearIndexes, guessChar, this.sequence, 0)) {
+                    nearCount++;
+                }
             }
         }
+
+        this.solved = exactCount == this.sequence.length;
+
+
+        player.addGuess(sequence, exactCount, nearCount);
+        player.turn = false;
     }
-
-    this.solved = exactCount == this.sequence.length;
-
-
-    var player = (playerName && this.getPlayer(playerName)) || this.players[0];
-    player.addGuess(sequence, exactCount, nearCount);
-    player.turn = false;
-}
+};
 
 Game.prototype.stats = function()
 {
@@ -154,7 +155,7 @@ Game.prototype.stats = function()
     });
 
     return ret;
-}
+};
 
 Game.prototype.getPlayer = function(playerName)
 {
@@ -173,12 +174,12 @@ Game.prototype.getPlayer = function(playerName)
     }
 
     return ret;
-}
+};
 
 Game.prototype.addPlayer = function(playerName)
 {
     this.players.push(new Player(playerName));
-}
+};
 
 Game.methods = {
     save: function(game)
@@ -202,6 +203,11 @@ Game.methods = {
                 if (reply)
                 {
                     game = JSON.parse(reply);
+                    game.__proto__ = Game.prototype;
+
+                    game.players.forEach(function (player) {
+                        player.__proto__ = Player.prototype;
+                    });
                 }
                 else
                 {

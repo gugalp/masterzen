@@ -1,6 +1,5 @@
-var http = require('http');
-http.createServer(function (req, res) {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Hello Node.JS!');
-}).listen(8080);
-console.log('Server running at http://localhost:8080/');
+var Game = require("./models/game");
+
+var game = new Game();
+
+Game.methods.save(game);

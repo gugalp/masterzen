@@ -2,7 +2,9 @@
   "name": "master-zen",
   "version": "0.0.1",
   "description": "Mastermind challenge",
-  "dependencies": {},
+  "dependencies": {
+    "redis": "^2.6.0-2"
+  },
   "main": "index.js",
   "scripts": {
     "test": "node index.js"

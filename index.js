@@ -9,9 +9,9 @@ var router = express.Router();
 
 app.use(bodyParser.json());
 
-router.post('/NewGame', function(request, response) {
+router.post('/NewGame', function (request, response) {
 
-    if(request.body.name == undefined) {
+    if (request.body.name == undefined) {
         console.log('bad request');
         response.send(400);
     } else {
@@ -32,8 +32,7 @@ router.post('/NewGame', function(request, response) {
                 'status': true
             });
         }
-        catch(e)
-        {
+        catch (e) {
             console.log(e);
             response.json(
                 {
@@ -46,12 +45,12 @@ router.post('/NewGame', function(request, response) {
 });
 
 
-router.post('/Guess', function(request, response) {
+router.post('/Guess', function (request, response) {
     if (request.body.gameId == undefined || request.body.guess == undefined) {
         console.log('bad request');
         response.send(400);
     } else {
-        Game.methods.load(request.body.gameId, function(err, game) {
+        Game.methods.load(request.body.gameId, function (err, game) {
             if (err) {
                 response.json(
                     {
@@ -61,9 +60,8 @@ router.post('/Guess', function(request, response) {
                 );
             }
             else {
-                try{
-                    if (game.solved)
-                    {
+                try {
+                    if (game.solved) {
                         response.json(
                             {
                                 "status": true,
@@ -102,8 +100,7 @@ router.post('/Guess', function(request, response) {
                         );
                     }
                 }
-                catch(e)
-                {
+                catch (e) {
                     console.log(e);
                     response.json(
                         {
@@ -117,12 +114,12 @@ router.post('/Guess', function(request, response) {
     }
 });
 
-router.post('/Stats', function(request, response) {
+router.post('/Stats', function (request, response) {
     if (request.body.gameId == undefined || request.body.playerName == undefined) {
         console.log('bad request');
         response.send(400);
     } else {
-        Game.methods.load(request.body.gameId, function(err, game) {
+        Game.methods.load(request.body.gameId, function (err, game) {
             if (err) {
                 response.json(
                     {
@@ -145,8 +142,7 @@ router.post('/Stats', function(request, response) {
 
                     response.send(out);
                 }
-                catch(e)
-                {
+                catch (e) {
                     console.log(e);
                     response.json(
                         {
@@ -160,12 +156,12 @@ router.post('/Stats', function(request, response) {
     }
 });
 
-router.post('/JoinGame', function(request, response) {
+router.post('/JoinGame', function (request, response) {
     if (request.body.gameId == undefined || request.body.playerName == undefined || request.body.gameId == undefined) {
         console.log('bad request');
         response.send(400);
     } else {
-        Game.methods.load(request.body.gameId, function(err, game) {
+        Game.methods.load(request.body.gameId, function (err, game) {
             if (err) {
                 response.json(
                     {
@@ -206,19 +202,19 @@ app.listen(8080);
 /*
 
 
-var game = new Game();
-game.init("TestPlayer")
-game.addPlayer("TestPlayer2");
-game.startTurn();
-game.guessCode("TestPlayer", "RRGYYG");
+ var game = new Game();
+ game.init("TestPlayer")
+ game.addPlayer("TestPlayer2");
+ game.startTurn();
+ game.guessCode("TestPlayer", "RRGYYG");
 
-Game.methods.save(game);
-Game.methods.load(
-    game.gameId,
-    function(err, ret)
-    {
-        console.log(err);
-        console.log(JSON.stringify(ret));
-    }
-);
-*/
+ Game.methods.save(game);
+ Game.methods.load(
+ game.gameId,
+ function(err, ret)
+ {
+ console.log(err);
+ console.log(JSON.stringify(ret));
+ }
+ );
+ */

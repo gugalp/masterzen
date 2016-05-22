@@ -13,15 +13,19 @@ if (![].contains) {
         enumerable: false,
         configurable: true,
         writable: true,
-        value: function(searchElement/*, fromIndex*/) {
+        value: function (searchElement/*, fromIndex*/) {
             if (this === undefined || this === null) {
                 throw new TypeError('Cannot convert this value to object');
             }
             var O = Object(this);
             var len = parseInt(O.length) || 0;
-            if (len === 0) { return false; }
+            if (len === 0) {
+                return false;
+            }
             var n = parseInt(arguments[1]) || 0;
-            if (n >= len) { return false; }
+            if (n >= len) {
+                return false;
+            }
             var k;
             if (n >= 0) {
                 k = n;
@@ -43,8 +47,7 @@ if (![].contains) {
     });
 }
 
-function initClient()
-{
+function initClient() {
     client = redis.createClient();
 
     client.on("error", function (err) {
@@ -52,39 +55,31 @@ function initClient()
     });
 };
 
-function makeSequence(possible, length)
-{
+function makeSequence(possible, length) {
     var text = "";
 
-    for(var i=0; i < length; i++)
-    {
+    for (var i = 0; i < length; i++) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
 };
 
-function checkNear(nearIndexes, guessChar, sequence, startPosition)
-{
+function checkNear(nearIndexes, guessChar, sequence, startPosition) {
     var nearIndex = sequence.indexOf(guessChar, startPosition);
 
-    if (nearIndex > -1)
-    {
-        if (!nearIndexes.contains(nearIndex))
-        {
+    if (nearIndex > -1) {
+        if (!nearIndexes.contains(nearIndex)) {
             nearIndexes.push(nearIndex);
             return true;
         }
-        else if (nearIndex >= sequence.length)
-        {
+        else if (nearIndex >= sequence.length) {
             return false;
         }
-        else
-        {
+        else {
             return checkNear(nearIndexes, guessChar, sequence, ++nearIndex);
         }
     }
-    else
-    {
+    else {
         return false;
     }
 };
@@ -98,31 +93,26 @@ function Game(config) {
     this.solved = false;
 };
 
-Game.prototype.init = function(playerName)
-{
+Game.prototype.init = function (playerName) {
     this.players.push(new Player(playerName));
 
     this.gameId = uuid.v1();
     this.sequence = makeSequence(this.config.colors.join(""), this.config.codeLength);
 
-    if (!this.config.multiplayer)
-    {
+    if (!this.config.multiplayer) {
         this.startTurn();
     }
 };
 
-Game.prototype.startTurn = function()
-{
+Game.prototype.startTurn = function () {
     this.players.forEach(
-        function (player)
-        {
+        function (player) {
             player.turn = true;
         }
     );
 };
 
-Game.prototype.guessCode = function(sequence, player)
-{
+Game.prototype.guessCode = function (sequence, player) {
     if (player.guesses.length < this.config.maxAttempts) {
         var exactCount = 0;
         var nearCount = 0;
@@ -149,35 +139,28 @@ Game.prototype.guessCode = function(sequence, player)
         player.addGuess(sequence, exactCount, nearCount);
         player.turn = false;
 
-        if (this.stats())
-        {
+        if (this.stats()) {
             this.startTurn();
         }
     }
-    else
-    {
+    else {
         throw new MaximumAttemptsExceededException();
     }
 };
 
-Game.prototype.stats = function()
-{
+Game.prototype.stats = function () {
     var ret = true;
-    this.players.forEach(function(player)
-    {
+    this.players.forEach(function (player) {
         ret = ret && !player.turn;
     });
 
     return ret;
 };
 
-Game.prototype.getPlayer = function (playerName)
-{
+Game.prototype.getPlayer = function (playerName) {
     var ret = null;
-    this.players.forEach(function(player)
-    {
-        if (player.name == playerName)
-        {
+    this.players.forEach(function (player) {
+        if (player.name == playerName) {
             ret = player;
         }
     });
@@ -185,39 +168,33 @@ Game.prototype.getPlayer = function (playerName)
     return ret;
 };
 
-Game.prototype.findPlayer = function(playerName)
-{
+Game.prototype.findPlayer = function (playerName) {
     var ret = this.getPlayer(playerName);
 
-    if (!ret)
-    {
+    if (!ret) {
         throw new PlayerNotFoundException();
     }
 
     return ret;
 };
 
-Game.prototype.addPlayer = function(playerName)
-{
+Game.prototype.addPlayer = function (playerName) {
     var player = this.getPlayer(playerName);
-    
-    if (player == null)
-    {
+
+    if (player == null) {
         this.players.push(new Player(playerName));
-    
+
         this.startTurn();
-    
+
         return true;
     }
-    else
-    {
+    else {
         throw new PlayerAddException();
     }
 };
 
 Game.methods = {
-    save: function(game)
-    {
+    save: function (game) {
         initClient();
         var gameHash = "game:" + game.gameId;
         client.set(gameHash, JSON.stringify(game), redis.print);
@@ -225,17 +202,14 @@ Game.methods = {
 
     },
 
-    load: function(gameId, callback)
-    {
+    load: function (gameId, callback) {
         initClient();
         var gameHash = "game:" + gameId;
 
-        client.get(gameHash, function(err, reply)
-            {
+        client.get(gameHash, function (err, reply) {
                 var game;
 
-                if (reply)
-                {
+                if (reply) {
                     game = JSON.parse(reply);
                     game.__proto__ = Game.prototype;
 
@@ -243,8 +217,7 @@ Game.methods = {
                         player.__proto__ = Player.prototype;
                     });
                 }
-                else
-                {
+                else {
                     err = "Game not found!";
                 }
 
@@ -254,6 +227,5 @@ Game.methods = {
         )
     }
 };
-
 
 module.exports = Game;

@@ -6,7 +6,7 @@ function Player(name) {
     this.guesses = [];
 }
 
-Player.prototype.addGuess = function(sequence, exact, hit) {
+Player.prototype.addGuess = function (sequence, exact, hit) {
     var guess = new Guess(sequence, exact, hit);
 
     this.guesses.push(guess);

@@ -5,6 +5,8 @@ var Config = require("./config");
 var PlayerNotFoundException = require("../exceptions/playernotfound");
 var MaximumAttemptsExceededException = require("../exceptions/maximumattempts");
 var PlayerAddException = require("../exceptions/playeradd");
+var GameStartException = require("../exceptions/gamestart");
+var GameTurnException = require("../exceptions/gameturn");
 
 var client;
 
@@ -86,11 +88,12 @@ function checkNear(nearIndexes, guessChar, sequence, startPosition) {
 
 function Game(config) {
     this.gameId = "";
-    this.config = config || new Config(["R", "G", "B", "Y"], 6, 10, false);
+    this.config = config || new Config();
     this.players = [];
     this.sequence = "";
-    this.timestamp = Date.now();
+    this.timestamp = undefined;
     this.solved = false;
+    this.playedTurns = -1;
 };
 
 Game.prototype.init = function (playerName) {
@@ -99,7 +102,8 @@ Game.prototype.init = function (playerName) {
     this.gameId = uuid.v1();
     this.sequence = makeSequence(this.config.colors.join(""), this.config.codeLength);
 
-    if (!this.config.multiplayer) {
+    if (!this.isMultiplayer()) {
+        this.timestamp = Date.now();
         this.startTurn();
     }
 };
@@ -110,9 +114,23 @@ Game.prototype.startTurn = function () {
             player.turn = true;
         }
     );
+
+    this.playedTurns++;
 };
 
+Game.prototype.ended = function () {
+    return (this.solved || this.playedTurns == this.config.maxAttempts) && this.stats();
+}
+
 Game.prototype.guessCode = function (sequence, player) {
+    if (!this.timestamp) {
+        throw new GameStartException();
+    }
+    else if (!player.turn) {
+        throw new GameTurnException();
+    }
+
+
     if (player.guesses.length < this.config.maxAttempts) {
         var exactCount = 0;
         var nearCount = 0;
@@ -133,14 +151,19 @@ Game.prototype.guessCode = function (sequence, player) {
             }
         }
 
-        this.solved = exactCount == this.sequence.length;
+        this.solved = this.solved || exactCount == this.sequence.length;
 
 
         player.addGuess(sequence, exactCount, nearCount);
         player.turn = false;
 
         if (this.stats()) {
-            this.startTurn();
+            if (!this.solved) {
+                this.startTurn();
+            }
+            else {
+                this.playedTurns++;
+            }
         }
     }
     else {
@@ -178,18 +201,35 @@ Game.prototype.findPlayer = function (playerName) {
     return ret;
 };
 
+Game.prototype.isMultiplayer = function () {
+    return this.config.numberOfPlayers > 1;
+}
+
 Game.prototype.addPlayer = function (playerName) {
-    var player = this.getPlayer(playerName);
+    if (this.isMultiplayer()) {
+        if (this.players.length < this.config.numberOfPlayers) {
+            var player = this.getPlayer(playerName);
 
-    if (player == null) {
-        this.players.push(new Player(playerName));
+            if (player == null) {
+                this.players.push(new Player(playerName));
 
-        this.startTurn();
+                if (this.players.length == this.config.numberOfPlayers) {
+                    this.timestamp = Date.now();
+                    this.startTurn();
+                }
 
-        return true;
+                return true;
+            }
+            else {
+                throw new PlayerAddException("Player already exists!");
+            }
+        }
+        else {
+            throw new PlayerAddException("Maximum number of players exceeded!");
+        }
     }
     else {
-        throw new PlayerAddException();
+        throw new PlayerAddException("Not a multiplayer game!");
     }
 };
 
@@ -212,6 +252,7 @@ Game.methods = {
                 if (reply) {
                     game = JSON.parse(reply);
                     game.__proto__ = Game.prototype;
+                    game.config.__proto__ = Config.prototype;
 
                     game.players.forEach(function (player) {
                         player.__proto__ = Player.prototype;

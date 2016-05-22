@@ -1,5 +1,5 @@
-function PlayerAddException() {
-    this.message = "Player already exists!";
+function PlayerAddException(message) {
+    this.message = message;
     // Use V8's native method if available, otherwise fallback
     if ("captureStackTrace" in Error)
         Error.captureStackTrace(this, PlayerAddException);

@@ -18,7 +18,7 @@ router.post('/NewGame', function (request, response) {
         try {
             var config = request.body.config;
             if (config != undefined) {
-                config = new Config(config.colors, config.codeLength, config.maxAttempts, config.multiplayer);
+                config = new Config(config.colors, config.codeLength, config.maxAttempts, config.numberOfPlayers);
             }
 
             var game = new Game(config);
@@ -61,7 +61,7 @@ router.post('/Guess', function (request, response) {
             }
             else {
                 try {
-                    if (game.solved) {
+                    if (game.stats() && this.solved) {
                         response.json(
                             {
                                 "status": true,
@@ -71,26 +71,16 @@ router.post('/Guess', function (request, response) {
                     }
                     else {
                         var playerName = request.body.playerName;
-                        if (game.config.multiplayer === true && playerName == undefined) {
+                        if (game.isMultiplayer() && playerName == undefined) {
                             response.send(400);
                             return;
                         }
 
                         var player = ((playerName && game.findPlayer(playerName)) || game.players[0]);
 
-                        if (player.turn) {
-                            game.guessCode(request.body.guess, player);
+                        game.guessCode(request.body.guess, player);
 
-                            Game.methods.save(game);
-                        }
-                        else if (game.config.multiplayer === true) {
-                            response.json(
-                                {
-                                    "status": true,
-                                    "msg": "Guessing not allowed until all players send their guesses!"
-                                }
-                            );
-                        }
+                        Game.methods.save(game);
 
                         response.json(
                             {
@@ -130,14 +120,22 @@ router.post('/Stats', function (request, response) {
             }
             else {
                 try {
+                    var out = JSON.parse(JSON.stringify(game));
                     var player = game.findPlayer(request.body.playerName);
 
-                    var out = JSON.parse(JSON.stringify(game));
-                    delete out.players;
-                    delete out.sequence;
+                    if (!game.ended()) {
+                        delete out.players;
+                        delete out.sequence;
+                        delete out.playedTurns;
 
-                    out.pastGuesses = player.guesses;
-                    out.numGuesses = player.guesses.length;
+                        out.pastGuesses = player.guesses.slice(0, game.playedTurns);
+                        out.numGuesses = game.playedTurns;
+                        out.canGuess = player.turn;
+                        out.solved = false;
+                    }
+                    else {
+                        out.canGuess = false;
+                    }
                     out.status = true;
 
                     response.send(out);
@@ -171,7 +169,7 @@ router.post('/JoinGame', function (request, response) {
                 );
             }
             else {
-                if (game.config.multiplayer) {
+                try {
                     if (game.addPlayer(request.body.playerName)) {
                         Game.methods.save(game);
                     }
@@ -182,7 +180,7 @@ router.post('/JoinGame', function (request, response) {
 
                     response.send(out);
                 }
-                else {
+                catch (e) {
                     response.json(
                         {
                             "status": false,

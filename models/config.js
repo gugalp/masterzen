@@ -1,8 +1,8 @@
-function Config(colors, codeLength, maxAttempts, multiplayer) {
+function Config(colors, codeLength, maxAttempts, numberOfPlayers) {
     this.colors = colors || ["R", "G", "B", "Y"];
-    this.codeLength = codeLength || 6;
-    this.maxAttempts = maxAttempts || 10;
-    this.multiplayer = multiplayer || false;
+    this.codeLength = codeLength > 0 ? codeLength : 6;
+    this.maxAttempts = maxAttempts > 0 ? maxAttempts : 10;
+    this.numberOfPlayers = numberOfPlayers > 0 ? numberOfPlayers : 1;
 };
 
 module.exports = Config;

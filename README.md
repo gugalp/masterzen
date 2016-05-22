@@ -259,3 +259,8 @@ Available Status:
     "canGuess": false
 }
 ```
+
+
+## Copyright and license
+
+Code released under the MIT license.

@@ -108,7 +108,7 @@ Available Status:
 ##### Example:
 ```json
 {
-    gameId: e273b2f0-204e-11e6-a687-c78d2f877fe1,
+    "gameId": "e273b2f0-204e-11e6-a687-c78d2f877fe1",
     "config": {
         "colors": ["R", "G", "B", "Y"],
         "codeLength": 6,
@@ -153,7 +153,7 @@ Available Status:
 
 | Status Code | Description|
 |---|---|
-|200|Successfully joinned the game|
+|200|Successfully sent the guess|
 |403|Guessing forbidden: <br>- Wait for other players to play; <br/>- Wait for other players to join;<br/>- Game ended;<br/>- Wrong guess sequence length;|
 |404|Game not found<br>Player not found|
 |500|Unknown error |

@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 router.post('/NewGame', function (request, response) {
     if (request.body.playerName == undefined) {
         console.log('bad request');
-        response.send(400);
+        response.sendStatus(400);
         return;
     }
 
@@ -51,7 +51,7 @@ router.post('/NewGame', function (request, response) {
 router.post('/Guess', function (request, response) {
     if (request.body.gameId == undefined || request.body.guess == undefined) {
         console.log('bad request');
-        response.send(400);
+        response.sendStatus(400);
         return;
     }
 
@@ -80,7 +80,7 @@ router.post('/Guess', function (request, response) {
 
             var playerName = request.body.playerName;
             if (game.isMultiplayer() && playerName == undefined) {
-                response.send(400);
+                response.sendStatus(400);
                 return;
             }
 
@@ -115,7 +115,7 @@ router.post('/Guess', function (request, response) {
 router.post('/Stats', function (request, response) {
     if (request.body.gameId == undefined || request.body.playerName == undefined) {
         console.log('bad request');
-        response.send(400);
+        response.sendStatus(400);
         return;
     }
 
@@ -167,7 +167,7 @@ router.post('/Stats', function (request, response) {
 router.post('/JoinGame', function (request, response) {
     if (request.body.gameId == undefined || request.body.playerName == undefined || request.body.gameId == undefined) {
         console.log('bad request');
-        response.send(400);
+        response.sendStatus(400);
         return;
     }
 

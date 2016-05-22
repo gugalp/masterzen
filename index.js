@@ -10,7 +10,7 @@ var router = express.Router();
 app.use(bodyParser.json());
 
 router.post('/NewGame', function (request, response) {
-    if (request.body.name == undefined) {
+    if (request.body.playerName == undefined) {
         console.log('bad request');
         response.send(400);
         return;
@@ -23,7 +23,7 @@ router.post('/NewGame', function (request, response) {
         }
 
         var game = new Game(config);
-        game.init(request.body.name);
+        game.init(request.body.playerName);
 
         Game.methods.initClient();
         Game.methods.save(game);

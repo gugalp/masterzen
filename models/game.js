@@ -1,7 +1,10 @@
 var Player = require("./player");
 var redis = require("redis");
 var uuid = require("node-uuid");
-var Config = require("./config")
+var Config = require("./config");
+var PlayerNotFoundException = require("../exceptions/playernotfound");
+var MaximumAttemptsExceededException = require("../exceptions/maximumattempts");
+var PlayerAddException = require("../exceptions/playeradd");
 
 var client;
 
@@ -42,7 +45,7 @@ if (![].contains) {
 
 function initClient()
 {
-    client = redis.createClient('//test:test@pub-redis-17878.us-east-1-4.2.ec2.garantiadata.com:17878');
+    client = redis.createClient();
 
     client.on("error", function (err) {
         console.log("Error " + err);
@@ -153,7 +156,7 @@ Game.prototype.guessCode = function(sequence, player)
     }
     else
     {
-        throw new Error("Maximum number of attempts exceeded!");
+        throw new MaximumAttemptsExceededException();
     }
 };
 
@@ -168,9 +171,9 @@ Game.prototype.stats = function()
     return ret;
 };
 
-Game.prototype.getPlayer = function(playerName)
+Game.prototype.getPlayer = function (playerName)
 {
-    var ret;
+    var ret = null;
     this.players.forEach(function(player)
     {
         if (player.name == playerName)
@@ -179,9 +182,16 @@ Game.prototype.getPlayer = function(playerName)
         }
     });
 
+    return ret;
+};
+
+Game.prototype.findPlayer = function(playerName)
+{
+    var ret = this.getPlayer(playerName);
+
     if (!ret)
     {
-        throw new Error("User not found");
+        throw new PlayerNotFoundException();
     }
 
     return ret;
@@ -189,9 +199,20 @@ Game.prototype.getPlayer = function(playerName)
 
 Game.prototype.addPlayer = function(playerName)
 {
-    this.players.push(new Player(playerName));
-
-    this.startTurn();
+    var player = this.getPlayer(playerName);
+    
+    if (player == null)
+    {
+        this.players.push(new Player(playerName));
+    
+        this.startTurn();
+    
+        return true;
+    }
+    else
+    {
+        throw new PlayerAddException();
+    }
 };
 
 Game.methods = {
@@ -224,7 +245,7 @@ Game.methods = {
                 }
                 else
                 {
-                    err = "Not found!";
+                    err = "Game not found!";
                 }
 
                 callback(err, game);

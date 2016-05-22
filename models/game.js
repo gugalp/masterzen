@@ -9,6 +9,7 @@ var GameStartException = require("../exceptions/gamestart");
 var GameTurnException = require("../exceptions/gameturn");
 var GameEndedException = require("../exceptions/gameended");
 var DatabaseException = require("../exceptions/database");
+var GuessLengthException = require("../exceptions/guesslength");
 
 if (![].contains) {
     Object.defineProperty(Array.prototype, 'contains', {
@@ -114,6 +115,10 @@ Game.prototype.ended = function () {
 }
 
 Game.prototype.guessCode = function (sequence, player) {
+    if (sequence.length != this.config.codeLength){
+        throw new GuessLengthException();
+    }
+
     if (!this.timestamp) {
         throw new GameStartException();
     }

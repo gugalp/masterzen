@@ -114,7 +114,7 @@ Available Status:
         "codeLength": 6,
         "maxAttempts": 10,
         "numberOfPlayers": 1
-    }
+    },
     "solved": false,
     "playedTurns": 0,
     "timestamp": 1463951658842

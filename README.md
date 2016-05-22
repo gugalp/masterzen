@@ -2,6 +2,19 @@ masterzen - A Mastermind API for Axiom Zen's VanHackathon Challenge
 ===================================================================
 This is a Node.js implementation for [the backend challenge of Axiom Zen on the VanHackaton](https://docs.google.com/document/d/1H9n_nWF7u7gq4oPs6AabhKPCZJMP2sbHqqkmD4yM6Y0).
 
+## Requirements
+
+Node 4.4.4+
+Redis 3.2.0
+
+## Usage
+
+`npm start`
+
+The default location for connecting redis is local. For changing it, you must edit the ./models/game.js file, and look for the line
+```
+client = redis.createClient('//user:pw@host:port');
+```
 ## API Definition
 ### API/NewGame
 

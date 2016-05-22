@@ -8,6 +8,7 @@ var PlayerAddException = require("../exceptions/playeradd");
 var GameStartException = require("../exceptions/gamestart");
 var GameTurnException = require("../exceptions/gameturn");
 var GameEndedException = require("../exceptions/gameended");
+var DatabaseException = require("../exceptions/database");
 
 if (![].contains) {
     Object.defineProperty(Array.prototype, 'contains', {
@@ -225,7 +226,7 @@ Game.methods = function () {
             client = redis.createClient();
 
             client.on("error", function (err) {
-                console.log("Error " + err);
+                throw new DatabaseException(err);
             });
         },
 
@@ -237,7 +238,11 @@ Game.methods = function () {
 
         save: function (game) {
             var gameHash = "game:" + game.gameId;
-            client.set(gameHash, JSON.stringify(game), redis.print);
+            client.set(gameHash, JSON.stringify(game), function(err){
+                if(err) {
+                    throw new DatabaseException(err.message || err);
+                }
+            });
         },
 
         load: function (gameId, callback) {

@@ -10,5 +10,6 @@ function PlayerAddException(message) {
 PlayerAddException.prototype = Object.create(Error.prototype);
 PlayerAddException.prototype.name = "PlayerAddException";
 PlayerAddException.prototype.constructor = PlayerAddException;
+PlayerAddException.prototype.errorCode = 403;
 
 module.exports = PlayerAddException;

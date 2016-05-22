@@ -10,5 +10,6 @@ function PlayerNotFoundException() {
 PlayerNotFoundException.prototype = Object.create(Error.prototype);
 PlayerNotFoundException.prototype.name = "PlayerNotFoundException";
 PlayerNotFoundException.prototype.constructor = PlayerNotFoundException;
+PlayerNotFoundException.prototype.errorCode = 404;
 
 module.exports = PlayerNotFoundException;

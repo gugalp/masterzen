@@ -10,5 +10,6 @@ function MaximumAttemptsExceededException() {
 MaximumAttemptsExceededException.prototype = Object.create(Error.prototype);
 MaximumAttemptsExceededException.prototype.name = "MaximumAttemptsExceededException";
 MaximumAttemptsExceededException.prototype.constructor = MaximumAttemptsExceededException;
+MaximumAttemptsExceededException.prototype.errorCode = 403;
 
 module.exports = MaximumAttemptsExceededException;

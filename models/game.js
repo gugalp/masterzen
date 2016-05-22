@@ -247,6 +247,12 @@ Game.methods = function () {
                 function (err, reply) {
                     var game;
 
+                    if (err) {
+                        err.message = err;
+                        err.code = 500;
+                        callback(err, undefined)
+                    }
+
                     if (reply) {
                         game = JSON.parse(reply);
                         game.__proto__ = Game.prototype;
@@ -257,7 +263,9 @@ Game.methods = function () {
                         });
                     }
                     else {
-                        err = "Game not found!";
+                        err = new Object();
+                        err.message = "Game not found!";
+                        err.code = 404;
                     }
 
                     callback(err, game);

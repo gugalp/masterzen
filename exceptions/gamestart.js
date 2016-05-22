@@ -10,5 +10,6 @@ function GameStartException() {
 GameStartException.prototype = Object.create(Error.prototype);
 GameStartException.prototype.name = "GameStartException";
 GameStartException.prototype.constructor = GameStartException;
+GameStartException.prototype.errorCode = 403;
 
 module.exports = GameStartException;

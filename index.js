@@ -29,7 +29,7 @@ router.post('/NewGame', function (request, response) {
         Game.methods.save(game);
         Game.methods.quitClient();
 
-        response.json({
+        response.status(201).json({
             'gameId': game.gameId,
             'config': game.config
         });
@@ -37,7 +37,7 @@ router.post('/NewGame', function (request, response) {
     }
     catch (e) {
         console.log(e);
-        response.status(500).json(
+        response.status(e.errorCode || 500).json(
             {
                 "msg": e.message
             }
@@ -58,9 +58,9 @@ router.post('/Guess', function (request, response) {
     Game.methods.initClient();
     Game.methods.load(request.body.gameId, function (err, game) {
         if (err) {
-            response.status(500).json(
+            response.status(err.code || 500).json(
                 {
-                    "msg": err
+                    "msg": err.message || err
                 }
             );
             Game.methods.quitClient();
@@ -101,7 +101,7 @@ router.post('/Guess', function (request, response) {
         }
         catch (e) {
             console.log(e);
-            response.status(500).json(
+            response.status(e.errorCode || 500).json(
                 {
                     "msg": e.message
                 }
@@ -123,9 +123,9 @@ router.post('/Stats', function (request, response) {
     Game.methods.load(request.body.gameId, function (err, game) {
         Game.methods.quitClient();
         if (err) {
-            response.status(500).json(
+            response.status(err.code || 500).json(
                 {
-                    "msg": err
+                    "msg": err.message || err
                 }
             );
             return;
@@ -154,7 +154,7 @@ router.post('/Stats', function (request, response) {
         }
         catch (e) {
             console.log(e);
-            response.status(500).json(
+            response.status(e.errorCode || 500).json(
                 {
                     "msg": e.message
                 }
@@ -174,9 +174,9 @@ router.post('/JoinGame', function (request, response) {
     Game.methods.initClient();
     Game.methods.load(request.body.gameId, function (err, game) {
         if (err) {
-            response.status(500).json(
+            response.status(err.code || 500).json(
                 {
-                    "msg": err
+                    "msg": err.message || err
                 }
             );
             Game.methods.quitClient();
@@ -196,7 +196,7 @@ router.post('/JoinGame', function (request, response) {
             return;
         }
         catch (e) {
-            response.status(500).json(
+            response.status(e.errorCode || 500).json(
                 {
                     "msg": e.message
                 }

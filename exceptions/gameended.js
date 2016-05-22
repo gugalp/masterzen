@@ -10,5 +10,6 @@ function GameEndedException() {
 GameEndedException.prototype = Object.create(Error.prototype);
 GameEndedException.prototype.name = "GameEndedException";
 GameEndedException.prototype.constructor = GameEndedException;
+GameEndedException.prototype.errorCode = 403;
 
 module.exports = GameEndedException;

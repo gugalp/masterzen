@@ -10,5 +10,6 @@ function GameTurnException() {
 GameTurnException.prototype = Object.create(Error.prototype);
 GameTurnException.prototype.name = "GameTurnException";
 GameTurnException.prototype.constructor = GameTurnException;
+GameTurnException.prototype.errorCode = 403;
 
 module.exports = GameTurnException;

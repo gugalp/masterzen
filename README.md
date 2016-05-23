@@ -10,6 +10,7 @@ Redis 3.2.0
 ## Usage
 
 `npm install`
+
 `npm start`
 
 The default location for connecting redis is local. For changing it, you must edit the ./models/game.js file, and look for the line
